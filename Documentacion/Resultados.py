@@ -35,7 +35,7 @@ data['Grado del modelo'] = data['Municipio'].map(grado)# Crear la paleta de colo
 colormap = branca.colormap.LinearColormap(
     vmin=data["Error Modelo MAE (µg/m3)"].min(),
     vmax=data["Error Modelo MAE (µg/m3)"].max(),
-    colors=["red", "yellow", "green"],
+    colors=["green", "yellow", "red"],
     caption="Error Modelo MAE (µg/m3)"
 )
 
@@ -77,5 +77,7 @@ g = folium.GeoJson(
 
 colormap.add_to(m)
 
-st.markdown("# Precisión en las predicciones")
+st.markdown("# Resultados")
+
+st.subheader("Precisión en las predicciones")
 folium_static(m, width=800, height=800)
