@@ -1,14 +1,20 @@
 import streamlit as st
 
-AireLNL = st.Page("Downloads/AireNL.py", title="AireLNL", icon=":material/dashboard:")
+API_PA = st.Page("API_PA/Peticion.py", title="Petición de datos")
 
-PurpleAir = st.Page("downloads/PurpleAir.py", title="Purple Air", icon=":material/dashboard:")
+AireLNL = st.Page("Downloads/AireNL.py", title="AireLNL")
 
-Emparejados = st.Page("downloads/Emparejamiento.py", title="Emparejados", icon=":material/dashboard:")
+PurpleAir = st.Page("Downloads/PurpleAir.py", title="Purple Air")
+
+Emparejados = st.Page("Downloads/Emparejamiento.py", title="Emparejados")
+
+Modelo = st.Page("Mejor_Modelo/Analisis.py", title="Análisis")
 
 pg = st.navigation(
         {
+            "Purple Air API": [API_PA],
             "Descarga de documentos": [AireLNL, PurpleAir, Emparejados],
+            "Resultados Finales": [Modelo],
         }
     )
 

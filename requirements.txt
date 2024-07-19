@@ -2,10 +2,9 @@ pandas
 seaborn
 matplotlib
 scikit-learn
-statsmodels
-plotly
 nbformat
 geopandas
 folium
 mapclassify
 streamlit
+streamlit-folium
