@@ -1,3 +1,4 @@
+import streamlit as st
 import requests
 import pandas as pd
 from io import StringIO
@@ -212,4 +213,5 @@ def getKeyInfo(api_key):
     used = 1000000 - remaining
 
     # Desplegar información
-    print(f"Total key points used (alltime): {used}/1000000\nRemaining: {remaining}")
+    st.write(f"Puntos usados (De 1,000,000): {used}")
+    st.write(f"Restantes: {remaining}")

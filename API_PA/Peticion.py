@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 from datetime import timedelta
 import sys
-
-
 import requests
 import pandas as pd
 from io import StringIO
@@ -96,19 +94,12 @@ if st.button('Ejecutar Request'):
         "X-API-Key": api_key
     }
 
-    st.write(start_timestamp)
-    st.write(start_timestamp_date_format)
-    st.write(end_timestamp)
-    st.write(end_timestamp_date_format)
-    st.write(fields)
-    st.write(period)
-
     # Inicializar dataframe vacio solo una vez
 
-    if 'df_full' not in globals():
-        df_full = pd.DataFrame(columns=columns)
+    if 'df_full' not in st.session_state:
+        st.session_state["df_full"] = pd.DataFrame(columns=columns)
     else:
-        st.write("Ya hay un dataframe inicializado")
+        st.write("Actualizando dataframe..")
 
     # Para reiniciar el dataframe aunque ya haya sido inicilizado, correr esta línea
     # Dejar comentada después de usarse, por si acaso
@@ -116,13 +107,16 @@ if st.button('Ejecutar Request'):
 
     Funciones.getKeyInfo(api_key)
 
+    
     df_aux = Funciones.getData(municipality, sensor, period, fields, columns, headers, offset, start_timestamp_date_format, end_timestamp_date_format)
+    
+    st.session_state["df_full"] = pd.concat([st.session_state["df_full"], df_aux], ignore_index=True)
 
-    st.dataframe(df_aux)
+    st.session_state["df_full"].sort_values("time_stamp", ascending=True, inplace=True)
+    st.session_state["df_full"].reset_index(drop=True, inplace=True)
+    
+    st.dataframe(st.session_state["df_full"])
 
-    df_full = pd.concat([df_full, df_aux], ignore_index=True)
+    st.write(f'{st.session_state["df_full"].shape[0]} registros agregados')
 
-    df_full.sort_values("time_stamp", ascending=True, inplace=True)
-    df_full.reset_index(drop=True, inplace=True)
-
-    df_full.to_csv(f"{municipality}_API_{period}MINS.csv", index=False)
+    st.download_button('Descargar CSV', st.session_state["df_full"].to_csv(index=False), file_name = f"{municipality}_API_{period}MINS.csv", mime="text/csv")
