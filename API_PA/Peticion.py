@@ -14,6 +14,11 @@ import json
 
 import API_PA.Funciones as Funciones
 
+sensorsDict = {"Tec Garza Laguera": 50871, "San Pedro": 39355, "Cadereyta": 39497, "Apodaca": 95337,
+                "Juarez": 93927, "San Nicolas": 93745, "Santa Catarina": 39285}
+
+# El de San Nico es simaUanl3
+
 col1, col2 = st.columns(2)
 
 with col1:
@@ -30,7 +35,7 @@ with col2:
 end_timestamp = str(end_date).replace(":", "-") + "T" + str(end_time) + "Z"
 
 municipality = st.selectbox("Lugar de donde se extraeran datos (Definirá el nombre del archivo):",
-                            ["Tec Garza Laguera", "San Pedro", "Cadereyta", "Apodaca", "Juarez", "San Nicolas", "Santa Catarina"])
+                            sensorsDict.keys())
 
 columns = st.multiselect(
     "Columnas de intéres:",
@@ -39,16 +44,15 @@ columns = st.multiselect(
 
 api_key = st.text_input("API Key (Previamente creada en https://www.google.com/url?q=https%3A%2F%2Fdevelop.purpleair.com%2F):", key = 5)
 
-period = st.number_input("Periodo, en minutos, de cada cuánto se quieren datos:", key = 6, value = None, format = "%.0f")
+period = st.number_input("Periodo, en minutos, de cada cuánto se quieren datos:", key = 6, value = 60, 
+                         help = "60 minutos (1 hora) es con lo que se está trabajando hasta el momento")
 
-sensor = st.number_input("Índice del sensor a obtener datos: ", key = 7, value = None, format = "%.0f")
+sensor = st.number_input("Índice del sensor a obtener datos: ", key = 7, value = sensorsDict[municipality] if municipality in sensorsDict else 0)
 
 agree = st.checkbox("Opción para observar los ID's de los sensores ya analizados")
 
 if agree:
-    Tabla = pd.DataFrame({
-        "Nombre del sensor": ["Tec Garza Laguera", "San Pedro", "Cadereyta", "Apodaca", "Juarez", "San Nicolas", "Santa Catarina"], 
-        "ID": [50871, 39355, 39497, 95337, 93927, 93745, 39285]})
+    Tabla = pd.DataFrame({"Nombre del sensor": sensorsDict.keys(), "ID": sensorsDict.values()})
     st.dataframe(Tabla)
 
 if st.button('Ejecutar Request'):
@@ -92,22 +96,33 @@ if st.button('Ejecutar Request'):
         "X-API-Key": api_key
     }
 
-    # Aqui se agrega o modifica el sensor de los municipios deseados
-    sensorsDict = {"Tec Garza Laguera": 50871, "San Pedro": 39355, "Cadereyta": 39497, "Apodaca": 95337,
-                "Juarez": 93927, "San Nicolas": 93745, "Santa Catarina": 39285}
-
-    sensorsDict[municipality] = sensor
-
-    try:
-        sensor_id = sensorsDict[municipality]
-    except:
-        st.write("ERROR: municipio invalido")
-        sys.exit()
-
     st.write(start_timestamp)
     st.write(start_timestamp_date_format)
     st.write(end_timestamp)
     st.write(end_timestamp_date_format)
-    st.write(sensor_id)
     st.write(fields)
     st.write(period)
+
+    # Inicializar dataframe vacio solo una vez
+
+    if 'df_full' not in globals():
+        df_full = pd.DataFrame(columns=columns)
+    else:
+        st.write("Ya hay un dataframe inicializado")
+
+    # Para reiniciar el dataframe aunque ya haya sido inicilizado, correr esta línea
+    # Dejar comentada después de usarse, por si acaso
+    # df_full = pd.DataFrame(columns=columns)
+
+    Funciones.getKeyInfo(api_key)
+
+    df_aux = Funciones.getData(municipality, sensor, period, fields, columns, headers, offset, start_timestamp_date_format, end_timestamp_date_format)
+
+    st.dataframe(df_aux)
+
+    df_full = pd.concat([df_full, df_aux], ignore_index=True)
+
+    df_full.sort_values("time_stamp", ascending=True, inplace=True)
+    df_full.reset_index(drop=True, inplace=True)
+
+    df_full.to_csv(f"{municipality}_API_{period}MINS.csv", index=False)
