@@ -1,12 +1,12 @@
 import streamlit as st
 import pandas as pd
 
-GarzaLaguera = pd.read_csv("PA/TEC_Garza_Laguera_PA.csv", parse_dates=["time_stamp"])
-Apodaca = pd.read_csv("PA/Apodaca_PA.csv", parse_dates=["time_stamp"])
-Juarez = pd.read_csv("PA/Juarez_PA.csv", parse_dates=["time_stamp"])
-SanNicolas = pd.read_csv("PA/SanNicolas_PA.csv", parse_dates=["time_stamp"])
-SanPedro = pd.read_csv("PA/SanPedro_PA.csv", parse_dates=["time_stamp"])
-SantaCatarina = pd.read_csv("PA/SantaCatarina_PA.csv", parse_dates=["time_stamp"])
+GarzaLaguera = pd.read_csv("PA/TecEGL.csv", parse_dates=["time_stamp"])
+Apodaca = pd.read_csv("PA/Apodaca.csv", parse_dates=["time_stamp"])
+Juarez = pd.read_csv("PA/Juarez.csv", parse_dates=["time_stamp"])
+SanNicolas = pd.read_csv("PA/SanNicolas.csv", parse_dates=["time_stamp"])
+SanPedro = pd.read_csv("PA/SanPedro.csv", parse_dates=["time_stamp"])
+SantaCatarina = pd.read_csv("PA/SantaCatarina.csv", parse_dates=["time_stamp"])
 
 Names = ["Tec Garza Laguera", "Apodaca", "Juarez", "San Nicolas", "San Pedro", "Santa Catarina"]
 Municipalities = [GarzaLaguera, Apodaca, Juarez, SanNicolas, SanPedro, SantaCatarina]
